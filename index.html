@@ -1,0 +1,290 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0c10">
+<meta name="description" content="A personal forex and crypto trade journal with a risk calculator.">
+<title>Trade Journal | Risk Calculator</title>
+<style>
+:root{color-scheme:dark;--bg:#0a0c10;--panel:#12161d;--line:#262d38;--text:#f1f5f9;--muted:#98a3b3;--green:#b8f59b;--red:#ff8585}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:1100px;width:92%;margin:auto}
+header{padding:24px 0;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-weight:800;letter-spacing:.04em}.brand span{color:var(--green)}
+.small{font-size:12px;color:var(--muted)}
+.hero{padding:34px 0 22px}
+.eyebrow{color:var(--green);font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}
+h1{font-size:clamp(28px,5vw,43px);letter-spacing:-1.5px;line-height:1.12;margin:10px 0}
+h2{font-size:18px;margin:0 0 15px}
+p{color:var(--muted);margin:5px 0}
+.layout{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;min-width:0}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0 18px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0}
+.stat label{display:block;color:var(--muted);font-size:12px}
+.stat strong{display:block;font-size:clamp(17px,3vw,24px);margin-top:6px;overflow-wrap:anywhere}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}
+input,select,textarea{width:100%;border:1px solid var(--line);background:#0c1016;color:var(--text);border-radius:9px;padding:11px;font:inherit;min-width:0}
+textarea{resize:vertical;min-height:75px}
+input:focus,select:focus,textarea:focus{outline:2px solid #58754a;border-color:var(--green)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{min-width:0}.full{grid-column:1/-1}
+.btn{display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:9px;padding:10px 13px;background:#1b222c;color:var(--text);font-weight:700;font-size:13px;cursor:pointer}
+.btn:hover{filter:brightness(1.15)}
+.btn.primary{background:var(--green);color:#11170e;border-color:var(--green)}
+.btn.danger{color:var(--red)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.result{background:#0c1016;border:1px solid var(--line);padding:12px;border-radius:10px;margin-top:12px}
+.result-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.result strong{display:block;font-size:18px;margin-top:3px}
+.green{color:var(--green)}.red{color:var(--red)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:720px}
+th,td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);font-size:13px}
+th{color:var(--muted);font-weight:600}
+.empty{text-align:center;padding:25px;color:var(--muted)}
+footer{padding:25px 0 35px;margin-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+.notice{font-size:12px;color:var(--muted);margin-top:12px}
+@media(max-width:720px){.layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.card{padding:16px}}
+@media(max-width:390px){.fields{grid-template-columns:1fr}.full{grid-column:auto}.hero{padding-top:25px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><span>◆</span> TRADE JOURNAL</div>
+  <div class="small">PERSONAL RESEARCH TOOL</div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="eyebrow">Plan · Record · Review</div>
+  <h1>Trade with a plan.<br><span class="green">Learn from your data.</span></h1>
+  <p>A private, browser-based journal and risk calculator for forex and crypto research.</p>
+</section>
+
+<section class="stats" aria-label="Journal statistics">
+  <div class="stat"><label>Recorded trades</label><strong id="total">0</strong></div>
+  <div class="stat"><label>Wins</label><strong id="wins" class="green">0</strong></div>
+  <div class="stat"><label>Losses</label><strong id="losses" class="red">0</strong></div>
+  <div class="stat"><label>Win rate</label><strong id="winrate">—</strong></div>
+</section>
+
+<div class="layout">
+<section class="card">
+<h2>01 / Risk calculator</h2>
+<p>Estimate price-based risk and reward before a trade.</p>
+<div class="fields" style="margin-top:16px">
+  <div class="field"><label for="account">Account balance</label><input id="account" type="number" min="0" step="any" value="1000"></div>
+  <div class="field"><label for="riskPct">Risk per trade (%)</label><input id="riskPct" type="number" min="0" max="100" step="any" value="1"></div>
+  <div class="field"><label for="entry">Entry price</label><input id="entry" type="number" min="0" step="any" value="100"></div>
+  <div class="field"><label for="stop">Stop-loss price</label><input id="stop" type="number" min="0" step="any" value="98"></div>
+  <div class="field full"><label for="target">Target price</label><input id="target" type="number" min="0" step="any" value="106"></div>
+</div>
+<div class="result">
+  <div class="result-grid">
+    <div><label>Cash risk budget</label><strong id="cashRisk">—</strong></div>
+    <div><label>Stop distance</label><strong id="distance">—</strong></div>
+    <div><label>Reward / risk</label><strong id="rr">—</strong></div>
+    <div><label>Estimated target P/L*</label><strong id="potential" class="green">—</strong></div>
+  </div>
+  <p id="calcMessage" class="notice" aria-live="polite">Enter valid prices to calculate.</p>
+</div>
+<p class="notice">*Price-based estimate assumes a linear position size derived from your cash risk budget. It excludes fees, slippage, funding, contract multipliers, leverage and currency conversion. Verify instrument specifications before trading.</p>
+</section>
+
+<section class="card">
+<h2>02 / Record a trade</h2>
+<p>Save a trade plan or record a completed trade.</p>
+<form id="tradeForm">
+<div class="fields" style="margin-top:16px">
+  <div class="field"><label for="asset">Asset / pair *</label><input id="asset" required maxlength="30" placeholder="e.g. EUR/USD, BTC/USDT"></div>
+  <div class="field"><label for="market">Market</label><select id="market"><option>Forex</option><option>Crypto</option><option>Other</option></select></div>
+  <div class="field"><label for="side">Direction</label><select id="side"><option>Long</option><option>Short</option></select></div>
+  <div class="field"><label for="date">Trade date</label><input id="date" type="date" required></div>
+  <div class="field"><label for="tradeEntry">Entry price *</label><input id="tradeEntry" type="number" min="0" step="any" required></div>
+  <div class="field"><label for="tradeStop">Stop-loss</label><input id="tradeStop" type="number" min="0" step="any"></div>
+  <div class="field"><label for="tradeTarget">Target price</label><input id="tradeTarget" type="number" min="0" step="any"></div>
+  <div class="field"><label for="outcome">Status</label><select id="outcome"><option value="Planned">Planned</option><option value="Win">Win</option><option value="Loss">Loss</option><option value="Breakeven">Breakeven</option></select></div>
+  <div class="field"><label for="pnl">Realized P/L</label><input id="pnl" type="number" step="any" value="0"></div>
+  <div class="field full"><label for="notes">Notes / trade thesis</label><textarea id="notes" maxlength="1000" placeholder="Setup, reason for entry, lessons learned…"></textarea></div>
+</div>
+<div class="actions"><button class="btn primary" type="submit">+ Save trade</button><button class="btn" type="reset">Reset form</button></div>
+</form>
+<p class="notice">Journal records are saved in this browser on this device. They are not synced to GitHub or another device.</p>
+</section>
+</div>
+
+<section class="card">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+  <div><h2>03 / Trade history</h2><p>Your saved journal entries.</p></div>
+  <div class="actions" style="margin:0">
+    <button class="btn" id="exportBtn" type="button">Export CSV</button>
+    <button class="btn danger" id="clearBtn" type="button">Clear journal</button>
+  </div>
+</div>
+<div class="table-wrap" style="margin-top:12px">
+<table>
+<thead><tr><th>Date</th><th>Asset</th><th>Market</th><th>Direction</th><th>Status</th><th>Realized P/L</th><th>Notes</th><th>Action</th></tr></thead>
+<tbody id="tradeRows"><tr><td colspan="8" class="empty">No trades recorded yet. Add your first entry above.</td></tr></tbody>
+</table>
+</div>
+<p class="notice">P/L totals include only values you enter; this app does not connect to a broker or verify trade results.</p>
+</section>
+</main>
+
+<footer>
+  <div>TRADE JOURNAL · Built for learning and record-keeping.</div>
+  <div>Not financial advice. Trading involves risk.</div>
+</footer>
+</div>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const STORAGE_KEY = "trade-journal-risk-calculator-v1";
+let trades = [];
+try {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  const parsed = saved ? JSON.parse(saved) : [];
+  if (Array.isArray(parsed)) trades = parsed.filter(t => t && typeof t.id === "string");
+} catch (e) {
+  console.warn("Could not load saved journal data.", e);
+}
+const money = n => Number.isFinite(n)
+  ? n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})
+  : "—";
+const num = id => Number($(id).value);
+const validPositive = n => Number.isFinite(n) && n > 0;
+
+function calculate() {
+  const balance = num("account"), pct = num("riskPct");
+  const entry = num("entry"), stop = num("stop"), target = num("target");
+  const budget = balance * pct / 100;
+  $("cashRisk").textContent = validPositive(balance) && pct >= 0 && pct <= 100 ? money(budget) : "—";
+  if (!validPositive(entry) || !validPositive(stop) || !validPositive(target) ||
+      !validPositive(balance) || !Number.isFinite(pct) || pct <= 0 || pct > 100) {
+    $("distance").textContent = "—";
+    $("rr").textContent = "—";
+    $("potential").textContent = "—";
+    $("calcMessage").textContent = "Enter positive prices and a risk percentage greater than 0 and no more than 100.";
+    return;
+  }
+  const stopDistance = Math.abs(entry - stop);
+  const rewardDistance = Math.abs(target - entry);
+  const riskReward = stopDistance > 0 ? rewardDistance / stopDistance : NaN;
+  const targetProfit = stopDistance > 0 ? budget * riskReward : NaN;
+  $("distance").textContent = money(stopDistance);
+  $("rr").textContent = Number.isFinite(riskReward) ? riskReward.toFixed(2) + " : 1" : "—";
+  $("potential").textContent = money(targetProfit);
+  $("calcMessage").textContent = stopDistance === 0
+    ? "Entry and stop-loss must be different."
+    : "Illustrative estimate only. Confirm direction, contract size, fees and instrument rules.";
+}
+["account","riskPct","entry","stop","target"].forEach(id => $(id).addEventListener("input", calculate));
+
+function persist() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(trades));
+    return true;
+  } catch (e) {
+    alert("The browser could not save data. Export your journal and check browser storage settings.");
+    return false;
+  }
+}
+function render() {
+  const wins = trades.filter(t => t.outcome === "Win").length;
+  const losses = trades.filter(t => t.outcome === "Loss").length;
+  const completed = wins + losses + trades.filter(t => t.outcome === "Breakeven").length;
+  $("total").textContent = trades.length;
+  $("wins").textContent = wins;
+  $("losses").textContent = losses;
+  $("winrate").textContent = completed ? (wins / completed * 100).toFixed(1) + "%" : "—";
+  const tbody = $("tradeRows");
+  tbody.replaceChildren();
+  if (!trades.length) {
+    const tr = document.createElement("tr"), td = document.createElement("td");
+    td.colSpan = 8; td.className = "empty"; td.textContent = "No trades recorded yet. Add your first entry above.";
+    tr.append(td); tbody.append(tr); return;
+  }
+  [...trades].reverse().forEach(t => {
+    const tr = document.createElement("tr");
+    [t.date,t.asset,t.market,t.side,t.outcome,money(t.pnl),t.notes || "—"].forEach((value,i) => {
+      const td = document.createElement("td");
+      td.textContent = value;
+      if (i === 5) td.className = t.pnl > 0 ? "green" : t.pnl < 0 ? "red" : "";
+      tr.append(td);
+    });
+    const action = document.createElement("td");
+    const del = document.createElement("button");
+    del.type = "button"; del.className = "btn danger"; del.textContent = "Delete";
+    del.addEventListener("click", () => {
+      if (confirm("Delete this journal entry?")) {
+        trades = trades.filter(x => x.id !== t.id);
+        if (persist()) render();
+      }
+    });
+    action.append(del); tr.append(action); tbody.append(tr);
+  });
+}
+$("date").value = new Date().toLocaleDateString("en-CA");
+$("tradeForm").addEventListener("submit", event => {
+  event.preventDefault();
+  const asset = $("asset").value.trim();
+  const entry = Number($("tradeEntry").value);
+  const stopRaw = $("tradeStop").value;
+  const targetRaw = $("tradeTarget").value;
+  const pnl = Number($("pnl").value);
+  if (!asset || !validPositive(entry) || !Number.isFinite(pnl)) {
+    alert("Enter an asset, a valid positive entry price, and a valid P/L value.");
+    return;
+  }
+  const trade = {
+    id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random()),
+    date: $("date").value,
+    asset,
+    market: $("market").value,
+    side: $("side").value,
+    entry,
+    stop: stopRaw === "" ? null : Number(stopRaw),
+    target: targetRaw === "" ? null : Number(targetRaw),
+    outcome: $("outcome").value,
+    pnl,
+    notes: $("notes").value.trim()
+  };
+  trades.push(trade);
+  if (persist()) {
+    render();
+    $("tradeForm").reset();
+    $("date").value = new Date().toLocaleDateString("en-CA");
+    $("pnl").value = "0";
+  } else {
+    trades.pop();
+  }
+});
+$("exportBtn").addEventListener("click", () => {
+  if (!trades.length) { alert("Your journal is empty."); return; }
+  const columns = ["date","asset","market","side","entry","stop","target","outcome","pnl","notes"];
+  const escapeCSV = value => '"' + String(value ?? "").replace(/"/g,'""') + '"';
+  const csv = [columns.join(","), ...trades.map(t => columns.map(k => escapeCSV(t[k])).join(","))].join("\r\n");
+  const blob = new Blob(["\uFEFF" + csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "trade-journal.csv"; a.click();
+  URL.revokeObjectURL(url);
+});
+$("clearBtn").addEventListener("click", () => {
+  if (trades.length && confirm("Permanently clear all journal entries saved in this browser? Export a CSV first if you need a backup.")) {
+    const previous = trades;
+    trades = [];
+    if (persist()) render(); else trades = previous;
+  }
+});
+calculate();
+render();
+</script>
+</body>
+  </html>
+  
