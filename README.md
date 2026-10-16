@@ -50,7 +50,7 @@ Trading forex and cryptocurrency involves substantial risk.
 
 Kushal Nagaral
 
-- GitHub: https://github.com/badigerkushal1-wq
+- GitHub: https://github.com/KushalNagaral7
 - Instagram: https://www.instagram.com/kushaln07/
 - LinkedIn: https://www.linkedin.com/in/kushal-nagaral-02346a34a/
 - 
