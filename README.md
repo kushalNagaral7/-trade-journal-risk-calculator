@@ -54,3 +54,8 @@ Kushal Nagaral
 - Instagram: https://www.instagram.com/kushaln07/
 - LinkedIn: https://www.linkedin.com/in/kushal-nagaral-02346a34a/
 - 
+## Preview
+
+![Trade Journal & Risk Calculator](screenshot.png)
+
+[Open Live Demo](https://kushalnagaral7.github.io/-trade-journal-risk-calculator/)
